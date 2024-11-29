@@ -247,10 +247,7 @@ app.delete("/admin/produtos/:id", isAdmin, (req, res) => {
 });
 
 
-/////////////////////////
-// Outros Endpoints (Categorias, Pedidos, ItensPedido)
-// Siga o mesmo padrão das rotas anteriores para adicionar endpoints para essas tabelas.
-/////////////////////////
+
 
 // Iniciar o servidor
 app.listen(port, () => {
