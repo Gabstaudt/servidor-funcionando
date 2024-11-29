@@ -11,6 +11,16 @@ const port = 3000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors()); // Ativa o CORS
+// Middleware para verificar se o usuário é admin
+function isAdmin(req, res, next) {
+    const { privilegio } = req.body; // Assumindo que o privilégio vem do body ou da sessão
+
+    if (privilegio !== "admin") {
+        return res.status(403).json({ error: "Acesso negado. Privilegios insuficientes." });
+    }
+    next();
+}
+
 
 
 // Configuração do banco de dados
@@ -151,7 +161,7 @@ app.post("/login", (req, res) => {
 /////////////////////////
 
 // Criar um novo produto
-app.post("/produtos", (req, res) => {
+app.post("/admin/produtos", isAdmin, (req, res) => {
     const { nome, descricao, preco, estoque, imagem, categoriaid } = req.body;
 
     if (!nome || !preco || !estoque || !categoriaid) {
@@ -170,6 +180,7 @@ app.post("/produtos", (req, res) => {
         }
     });
 });
+
 
 // Listar todos os produtos
 app.get("/produtos", (req, res) => {
@@ -220,8 +231,9 @@ app.put("/produtos/:id", (req, res) => {
 });
 
 // Deletar um produto
-app.delete("/produtos/:id", (req, res) => {
+app.delete("/admin/produtos/:id", isAdmin, (req, res) => {
     const { id } = req.params;
+
     const query = "DELETE FROM produtos WHERE id = ?";
     db.query(query, [id], (err, result) => {
         if (err) {
@@ -233,6 +245,7 @@ app.delete("/produtos/:id", (req, res) => {
         }
     });
 });
+
 
 /////////////////////////
 // Outros Endpoints (Categorias, Pedidos, ItensPedido)
